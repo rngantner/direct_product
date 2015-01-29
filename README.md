@@ -45,3 +45,5 @@ the following expressions must be valid and have their specified effects.
 ------------ | -----------------
  `double n = norm(v)` | `n` contains the norm of `v`
  
+### Notes
+The function `norm_p` is implemented for `direct_product<Ts...>` types and simply combines the norms of the underlying objects in an L^p sense. For this to work, the `norm` function must be defined for all types involved in the direct product.
