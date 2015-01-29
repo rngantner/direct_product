@@ -24,6 +24,7 @@
 set(EXAMPLES
     basics
     own_types
+    normed
 )
 
 

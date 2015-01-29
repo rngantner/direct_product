@@ -18,11 +18,14 @@
 #include <stdlib.h>     // size_t
 #include <type_traits>  // std::enable_if
 #include <utility>      // std::move
+#include <cmath>        // pow
 #include <boost/serialization/base_object.hpp>
 
 #ifndef DIRECT_PRODUCT_HPP
 #define DIRECT_PRODUCT_HPP
 #pragma once
+
+namespace vectorspace {
 
 template<class... Ts>
 struct direct_product {
@@ -67,6 +70,7 @@ struct direct_product<T, Ts...> : direct_product<Ts...> {
     }
 };
 
+
 // prepend: move version
 template<class T, class... Ts>
 direct_product<T, Ts...> prepend(T t, direct_product<Ts...>&& p) {
@@ -93,7 +97,7 @@ struct component_type<k, direct_product<T, Ts...>> {
 };
 
 /**
- * get the k-th component
+ * get the k-th component (non-const)
  */
 template<size_t k, class... Ts>
 typename std::enable_if<k==0, typename component_type<0, direct_product<Ts...>>::type&>::type
@@ -107,6 +111,23 @@ get(direct_product<T, Ts...>& t) {
     direct_product<Ts...>& base = t; // TODO: why does this work??
     return get<k-1>(base);
 }
+
+/**
+ * get the k-th component (const version)
+ */
+template<size_t k, class... Ts>
+typename std::enable_if<k==0, const typename component_type<0, direct_product<Ts...>>::type&>::type
+get(const direct_product<Ts...>& t) {
+    return t.component;
+}
+// recurse
+template<size_t k, class T, class... Ts>
+typename std::enable_if<k!=0, const typename component_type<k, direct_product<T,Ts...>>::type&>::type
+get(const direct_product<T, Ts...>& t) {
+    direct_product<Ts...>& base = t; // TODO: why does this work??
+    return get<k-1>(base);
+}
+
 
 /**
  * Addition of two instances: x+y
@@ -155,6 +176,28 @@ operator*(S a, direct_product<Ts...>&& x) {
 }
 
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// Normed space: define general L^p norm
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/** compute sum of powers */
+template<class T, class... Ts>
+double sump(const direct_product<T, Ts...>& x, size_t p) {
+    const direct_product<Ts...>& xx = x;
+    double tmp = std::pow<double>(fabs(get<0>(x)),p) + sump(xx,p);
+    return tmp;
+}
+template<class... Ts>
+double sump(const direct_product<Ts...>& x, size_t p)
+{return 0.;}
+
+/** compute L^p-norm */
+template<class T, class... Ts>
+double norm_p(const direct_product<T, Ts...>& x, size_t p) {
+    return std::pow<double>(sump(x,p), 1./p);
+}
+
+} // namespace vectorspace
 
 #endif /* end of include guard: DIRECT_PRODUCT_HPP */
 

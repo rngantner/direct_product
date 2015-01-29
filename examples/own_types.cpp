@@ -16,6 +16,7 @@
  */
 
 #include <direct_product.hpp>
+using namespace vectorspace;
 #include <iostream>
 
 

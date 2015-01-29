@@ -16,7 +16,9 @@
  */
 
 #include <direct_product.hpp>
+using namespace vectorspace;
 #include <iostream>
+
 
 int main(int argc, const char *argv[])
 {
