@@ -18,12 +18,17 @@
 #include <stdlib.h>     // size_t
 #include <type_traits>  // std::enable_if
 #include <utility>      // std::move
+#include <boost/serialization/base_object.hpp>
 
 #ifndef DIRECT_PRODUCT_HPP
 #define DIRECT_PRODUCT_HPP
 #pragma once
 
-template<class... Ts> struct direct_product {};
+template<class... Ts>
+struct direct_product {
+    template<class Archive>
+    void serialize(Archive & ar, const unsigned int version) {}
+};
 
 /**
  * Variadic template to store the components of the direct product.
@@ -32,16 +37,34 @@ template<class T, class... Ts>
 struct direct_product<T, Ts...> : direct_product<Ts...> {
     // copy ctor
     direct_product(const direct_product<T, Ts...>&) = default;
-    // copy prepend
-    direct_product(T t, const direct_product<Ts...>& p) : direct_product<Ts...>(p), component(t) {}
     // move ctor
     direct_product(direct_product<T, Ts...>&&) = default;
+    // copy assignment
+    direct_product<T, Ts...>& operator=(const direct_product<T, Ts...>&) = default;
+    // move assignment
+    direct_product<T, Ts...>& operator=(direct_product<T, Ts...>&&) = default;
+
+    // default ctor: assumes all types are default-constructible
+    direct_product() : direct_product<Ts...>(), component() {}
+    // ctor
+    direct_product(T t, Ts... ts) : direct_product<Ts...>(ts...), component(t) {}
+
+    // copy prepend
+    direct_product(T t, const direct_product<Ts...>& p) : direct_product<Ts...>(p), component(t) {}
     // move prepend
     direct_product(T t, direct_product<Ts...>&& p) : direct_product<Ts...>(p), component(t) {}
-    // default ctor
-    direct_product(T t, Ts... ts) : direct_product<Ts...>(ts...), component(t) {}
+
     // data
     T component;
+
+    // boost::serialization support
+    friend class boost::serialization::access;
+    // serialize own member, then call recursively
+    template<class Archive>
+    void serialize(Archive & ar, const unsigned int version) {
+        ar & boost::serialization::base_object<direct_product<Ts...>>(*this);
+        ar & component;
+    }
 };
 
 // prepend: move version
@@ -104,29 +127,30 @@ operator+(const direct_product<Ts...>& x, const direct_product<Ts...>& y) {
 /**
  * Multiplication by a scalar (type S): a*x
  */
-// recursion
+// (I) pass x as lvalue reference
+// (I.a) recursion
 template<class S, class T, class... Ts>
 direct_product<T,Ts...>
-operator*(S& a, direct_product<T,Ts...>& x) {
+operator*(S a, direct_product<T,Ts...>& x) {
     direct_product<Ts...>& base = x;
     return direct_product<T, Ts...>(a*x.component, a*base);
 }
-// base case
+// (I.b) base case
 template<class S, class... Ts> direct_product<>
-operator*(S& a, direct_product<Ts...>& x) {
+operator*(S a, direct_product<Ts...>& x) {
     return direct_product<Ts...>();
 }
-///// rvalue reference overload
-// recursion
+// (II) pass x as rvalue reference
+// (II.a) recursion
 template<class S, class T, class... Ts>
 direct_product<T,Ts...>
-operator*(S&& a, direct_product<T,Ts...>& x) {
-    direct_product<Ts...>& base = x;
+operator*(S a, direct_product<T,Ts...>&& x) {
+    direct_product<Ts...> base = x;
     return direct_product<T, Ts...>(a*x.component, a*base);
 }
-// base case
+// (II.b) base case
 template<class S, class... Ts> direct_product<>
-operator*(S&& a, direct_product<Ts...>& x) {
+operator*(S a, direct_product<Ts...>&& x) {
     return direct_product<Ts...>();
 }
 
