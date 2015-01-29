@@ -29,7 +29,6 @@ set(EXAMPLES
 # Add separate target for each example 
 foreach(EXAMPLE ${EXAMPLES})
     add_executable(${EXAMPLE} EXCLUDE_FROM_ALL ${EXAMPLE}.cpp ${TMP})
-    target_link_libraries(${EXAMPLE} ${Boost_LIBRARIES})
 endforeach()
 
 # Add target to build all examples

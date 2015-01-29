@@ -27,21 +27,10 @@ add_definitions(-g)
 include_directories(${direct_product_SOURCE_DIR}/include/)
 
 ####################################################################################################
-#### packages
-####################################################################################################
-## config path for module finder scripts
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${direct_product_SOURCE_DIR}/cmake/Modules/")
-## Boost
-find_package(Boost REQUIRED COMPONENTS program_options serialization)
-include_directories(${Boost_INCLUDE_DIRS})
-
-
-####################################################################################################
 #### targets
 ####################################################################################################
 #add_subdirectory(test)
 add_subdirectory(examples)
-
 
 ####################################################################################################
 #### installation
