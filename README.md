@@ -18,6 +18,7 @@ and, given
   * `a`, an instance of a scalar type,
 
 the following expressions must be valid and have their specified effects.
+
  Expression  | Postcondition
 ------------ | -----------------
  `V u = v+w` | `u` contains the sum of `v` and `w`
