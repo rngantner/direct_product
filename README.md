@@ -1,7 +1,8 @@
 # direct_product
-Represents direct product of types fulfilling the VectorSpace concept, and implements addition and scalar multiplication for the resulting type.
+C++ library representing the direct product of types fulfilling the VectorSpace concept (see below).
+The resulting type again models VectorSpace (i.e. addition of two instances and multiplication by a scalar are implemented).
 
-The types involved must model the VectorSpace concept, defined as follows:
+All types involved must model the VectorSpace concept, defined as follows:
 
 ## VectorSpace
 The goal of this concept is to provide minimal requirements for classes whose instances represent elements of a vector space.
