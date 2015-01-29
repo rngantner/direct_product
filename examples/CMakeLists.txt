@@ -23,6 +23,7 @@
 # The example files (expand as needed)
 set(EXAMPLES
     basics
+    own_types
 )
 
 
