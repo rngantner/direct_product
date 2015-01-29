@@ -5,9 +5,7 @@ The resulting type again models VectorSpace (i.e. addition of two instances and 
 All types involved must model the VectorSpace concept, defined as follows:
 
 ## VectorSpace
-The goal of this concept is to provide minimal requirements for classes whose instances represent elements of a vector space.
-The two basic requirements are an addition operation and multiplication with a scalar;
-in C++ we assume these to be given by `operator+` and `operator*`, respectively.
+The goal of this concept is to provide minimal requirements for classes whose instances represent elements of a vector space. The two basic requirements are an addition operation and multiplication with a scalar; in C++ we assume these to be given by `operator+` and `operator*`, respectively.
 
 ### Requirements
 
@@ -30,3 +28,20 @@ the following expressions must be valid and have their specified effects.
 Only multiplication by a scalar from the left is assumed in the expressions above;
 the reverse argument ordering (i.e. `w*a`) is not required.
 
+## NormedVectorSpace
+In certain applications, norms of elements are required; this concept extends `VectorSpace` by requiring that there exists a `norm(x)` function for any instance `x` of a class modelling VectorSpace.
+
+### Requirements
+
+The type `V` satisfies `NormedVectorSpace` if
+  * the type satisfies `VectorSpace`
+
+and, given
+  * `v`, an instance of `V`,
+
+the following expressions must be valid and have their specified effects.
+
+ Expression  | Postcondition
+------------ | -----------------
+ `double n = norm(v)` | `n` contains the norm of `v`
+ 
