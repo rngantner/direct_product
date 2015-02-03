@@ -197,6 +197,14 @@ double norm_p(const direct_product<T, Ts...>& x, size_t p) {
     return std::pow<double>(sump(x,p), 1./p);
 }
 
+/** max norm over components. Requires norm on component. */
+template<class T, class... Ts>
+double norm_max(const direct_product<T, Ts...>& x) {
+    auto m = norm(x.component);
+    direct_product<Ts...>& xx = x;
+    return max(norm_max(xx),m);
+}
+
 } // namespace vectorspace
 
 #endif /* end of include guard: DIRECT_PRODUCT_HPP */
