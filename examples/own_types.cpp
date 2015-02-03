@@ -34,6 +34,7 @@ public:
     MyClass(double y) : x(y) {}
     // friends
     friend MyClass operator+(const MyClass& x, const MyClass& y);
+    friend MyClass& operator+=(MyClass& x, const MyClass& y);
     friend MyClass operator*(double& a, const MyClass& y);
     // getter
     double value() {return x;}
@@ -42,6 +43,7 @@ public:
 // Vector space operations
 MyClass operator+(const MyClass& x, const MyClass& y) { return MyClass(x.x+y.x); }
 MyClass operator*(double& a, const MyClass& y) { return MyClass(y.x * a); }
+MyClass& operator+=(MyClass& x, const MyClass& y) { x.x+=y.x; return x; }
 
 
 int main(int argc, const char *argv[])
@@ -49,6 +51,14 @@ int main(int argc, const char *argv[])
     // test MyClass
     MyClass x(1.2), y(3.4);
     std::cout << "x+y: " << (x+y).value() << std::endl;
+
+    MyClass z = x + y;
+    std::cout << "z = " << z.value() << std::endl;
+
+
+    MyClass q = x;
+    q+=y;
+    std::cout << "q: " << q.value() << std::endl;
 
     // direct product with a double
     direct_product<double, MyClass> a(3.14, x);
@@ -61,4 +71,20 @@ int main(int argc, const char *argv[])
     std::cout << get<0>(b).value() << ", "
               << get<1>(b).value() << std::endl;
 
+    direct_product<MyClass, MyClass> c(x, z);
+
+    // addition
+    auto z2 = b + c;
+    std::cout << get<0>(z2).value() << ", "
+              << get<1>(z2).value() << std::endl;
+
+    // scalar multiplication
+    auto z3 = 2.*a;
+    std::cout << get<0>(z3) << ", "
+              << get<1>(z3).value() << std::endl;
+
+    auto z4 = b;
+    z4 += c;
+    std::cout << get<0>(z4).value() << ", "
+              << get<1>(z4).value() << std::endl;
 }

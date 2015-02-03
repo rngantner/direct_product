@@ -145,6 +145,24 @@ template<class... Ts> direct_product<>
 operator+(const direct_product<Ts...>& x, const direct_product<Ts...>& y) {
     return direct_product<Ts...>();
 }
+
+/**
+ * Addition-assignment
+ */
+// recursion
+template<class T, class... Ts> direct_product<T,Ts...>&
+operator+=(direct_product<T,Ts...>& x, const direct_product<T,Ts...>& y) {
+    x.component += y.component;
+    direct_product<Ts...>& xx = x;
+    const direct_product<Ts...>& yy = y;
+    xx += yy;
+    return x;
+}
+template<class... Ts> direct_product<>&
+operator+=(direct_product<Ts...>& x, const direct_product<Ts...>& y) {
+    return x;
+}
+
 /**
  * Multiplication by a scalar (type S): a*x
  */
